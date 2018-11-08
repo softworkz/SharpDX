@@ -29,8 +29,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
+// ReSharper disable RedundantNameQualifier
 #if DESKTOP_APP
 namespace SharpDX.MediaFoundation.DirectX {
 
@@ -637,15 +639,15 @@ namespace SharpDX.MediaFoundation.DirectX {
         /// <msdn-id>ms696227</msdn-id>	
         /// <unmanaged>HRESULT IDirectXVideoAccelerationService::CreateSurface([In] unsigned int Width,[In] unsigned int Height,[In] unsigned int BackBuffers,[In] D3DFORMAT Format,[In] D3DPOOL Pool,[In] unsigned int Usage,[In] unsigned int DxvaType,[Out, Buffer] IDirect3DSurface9** ppSurface,[InOut, Optional] void** pSharedHandle)</unmanaged>	
         /// <unmanaged-short>IDirectXVideoAccelerationService::CreateSurface</unmanaged-short>	
-        public void CreateSurface(int width, int height, int backBuffers, SharpDX.Direct3D9.Format format, SharpDX.Direct3D9.Pool pool, int usage, int dxvaType, SharpDX.Direct3D9.Surface[] surfaceOut, System.IntPtr sharedHandleRef) {
+        public bool CreateSurface(int width, int height, int backBuffers, SharpDX.Direct3D9.Format format, SharpDX.Direct3D9.Pool pool, int usage, int dxvaType, SharpDX.Direct3D9.Surface[] surfaceOut, System.IntPtr sharedHandleRef) {
             unsafe {
                 IntPtr* surfaceOut_ = stackalloc IntPtr[surfaceOut.Length];
                 SharpDX.Result __result__;
                 __result__= 
 				SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, width, height, backBuffers, unchecked((int)format), unchecked((int)pool), usage, dxvaType, surfaceOut_, (void*)sharedHandleRef,((void**)(*(void**)_nativePointer))[3]);		
                 for (int i = 0; i < surfaceOut.Length; i++)
-                    surfaceOut[i] = (surfaceOut_[i] == IntPtr.Zero)?null:new SharpDX.Direct3D9.Surface(surfaceOut_[i]);	
-                __result__.CheckError();
+                    surfaceOut[i] = (surfaceOut_[i] == IntPtr.Zero)?null:new SharpDX.Direct3D9.Surface(surfaceOut_[i]);
+                return __result__.Success;
             }
         }
     }
@@ -894,18 +896,25 @@ namespace SharpDX.MediaFoundation.DirectX {
         /// <msdn-id>ms697067</msdn-id>	
         /// <unmanaged>HRESULT IDirectXVideoDecoderService::GetDecoderDeviceGuids([Out] unsigned int* pCount,[Out, Buffer, Optional] GUID** pGuids)</unmanaged>	
         /// <unmanaged-short>IDirectXVideoDecoderService::GetDecoderDeviceGuids</unmanaged-short>	
-        public void GetDecoderDeviceGuids(out int countRef, System.Guid[] guidsRef) {
-            unsafe {
-                System.Guid[] guidsRef__ = guidsRef;
-                SharpDX.Result __result__;
-                fixed (void* countRef_ = &countRef)
-                    fixed (void* guidsRef_ = guidsRef__)
-                        __result__= 
-        				SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, countRef_, guidsRef_,((void**)(*(void**)_nativePointer))[4]);		
-                __result__.CheckError();
+        public unsafe void GetDecoderDeviceGuids(out int countRef, System.Guid[] guidsRef) {
+            SharpDX.Result __result__;
+            IntPtr guidArr_ = IntPtr.Zero;
+
+            fixed (void* countRef_ = &countRef)
+            {
+                __result__ = 
+                    SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, countRef_, &guidArr_,((void**)(*(void**)_nativePointer))[4]);
+            }
+
+            __result__.CheckError();
+
+            for (int i = 0; i < countRef && i < guidsRef.Length; i++)
+            {
+                IntPtr ins = guidArr_ + i * Marshal.SizeOf(typeof(Guid));
+                guidsRef[i] = (Guid)Marshal.PtrToStructure(ins, typeof(Guid));
             }
         }
-        
+
         /// <summary>	
         /// <p> </p><p>Retrieves the supported render targets for a specified decoder device.</p>	
         /// </summary>	
@@ -917,18 +926,26 @@ namespace SharpDX.MediaFoundation.DirectX {
         /// <msdn-id>ms703193</msdn-id>	
         /// <unmanaged>HRESULT IDirectXVideoDecoderService::GetDecoderRenderTargets([In] const GUID&amp; Guid,[Out] unsigned int* pCount,[Out, Buffer, Optional] D3DFORMAT** pFormats)</unmanaged>	
         /// <unmanaged-short>IDirectXVideoDecoderService::GetDecoderRenderTargets</unmanaged-short>	
-        public void GetDecoderRenderTargets(System.Guid guid, out int countRef, SharpDX.Direct3D9.Format[] formatsRef) {
-            unsafe {
-                SharpDX.Direct3D9.Format[] formatsRef__ = formatsRef;
-                SharpDX.Result __result__;
-                fixed (void* countRef_ = &countRef)
-                    fixed (void* formatsRef_ = formatsRef__)
-                        __result__= 
-        				SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, &guid, countRef_, formatsRef_,((void**)(*(void**)_nativePointer))[5]);		
-                __result__.CheckError();
+        public unsafe void GetDecoderRenderTargets(System.Guid guid, out int countRef, SharpDX.Direct3D9.Format[] formatsRef) {
+
+            IntPtr formatsRef_ = IntPtr.Zero;
+            SharpDX.Result __result__;
+
+            fixed (void* countRef_ = &countRef)
+            {
+                __result__ = 
+                    SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, &guid, countRef_, &formatsRef_,((void**)(*(void**)_nativePointer))[5]);
+            }
+
+            __result__.CheckError();
+
+            for (int i = 0; i < countRef && i < formatsRef.Length; i++)
+            {
+                IntPtr ins = formatsRef_ + i * Marshal.SizeOf(typeof(int));
+                formatsRef[i] = (SharpDX.Direct3D9.Format)Marshal.ReadInt32(ins);
             }
         }
-        
+
         /// <summary>	
         /// <p>Gets the configurations that are available for a decoder device. </p>	
         /// </summary>	
@@ -942,19 +959,36 @@ namespace SharpDX.MediaFoundation.DirectX {
         /// <msdn-id>ms699833</msdn-id>	
         /// <unmanaged>HRESULT IDirectXVideoDecoderService::GetDecoderConfigurations([In] const GUID&amp; Guid,[In] const DXVA2_VideoDesc* pVideoDesc,[In] void* pReserved,[Out] unsigned int* pCount,[Out, Buffer, Optional] DXVA2_ConfigPictureDecode** ppConfigs)</unmanaged>	
         /// <unmanaged-short>IDirectXVideoDecoderService::GetDecoderConfigurations</unmanaged-short>	
-        public void GetDecoderConfigurations(System.Guid guid, ref SharpDX.MediaFoundation.DirectX.VideoDesc videoDescRef, System.IntPtr reservedRef, out int countRef, SharpDX.MediaFoundation.DirectX.ConfigPictureDecode[] configsOut) {
-            unsafe {
-                SharpDX.MediaFoundation.DirectX.ConfigPictureDecode[] configsOut__ = configsOut;
-                SharpDX.Result __result__;
-                fixed (void* videoDescRef_ = &videoDescRef)
-                    fixed (void* countRef_ = &countRef)
-                        fixed (void* configsOut_ = configsOut__)
-                            __result__= 
-            				SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, (void*)&guid, videoDescRef_, (void*)reservedRef, countRef_, configsOut_,((void**)(*(void**)_nativePointer))[6]);		
-                __result__.CheckError();
+        public unsafe bool GetDecoderConfigurations(System.Guid guid, ref SharpDX.MediaFoundation.DirectX.VideoDesc videoDescRef, System.IntPtr reservedRef, out int countRef, SharpDX.MediaFoundation.DirectX.ConfigPictureDecode[] configsOut)
+        {
+            IntPtr configsOut_ = IntPtr.Zero;
+
+            SharpDX.Result __result__;
+            fixed (void* videoDescRef_ = &videoDescRef)
+            {
+                fixed (void* countRef_ = &countRef)
+                {
+                    __result__ =
+                        SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, (void*)&guid, videoDescRef_, (void*)reservedRef, countRef_, &configsOut_, ((void**)(*(void**)_nativePointer))[6]);
+                }
             }
+
+            if(__result__.Success)
+            {
+                if(configsOut != null && configsOut_ != null)
+                {
+                    for(int i = 0; i < countRef && i < configsOut.Length; i++)
+                    {
+                        IntPtr ins = configsOut_ + i * Marshal.SizeOf(typeof(ConfigPictureDecode));
+                        configsOut[i] = (ConfigPictureDecode)Marshal.PtrToStructure(ins, typeof(ConfigPictureDecode));
+                    }
+
+                }
+            }
+
+            return __result__.Success;
         }
-        
+
         /// <summary>	
         /// <p> </p><p>Creates a video decoder device.</p>	
         /// </summary>	
@@ -969,7 +1003,7 @@ namespace SharpDX.MediaFoundation.DirectX {
         /// <msdn-id>ms696175</msdn-id>	
         /// <unmanaged>HRESULT IDirectXVideoDecoderService::CreateVideoDecoder([In] const GUID&amp; Guid,[In] const DXVA2_VideoDesc* pVideoDesc,[In] const DXVA2_ConfigPictureDecode* pConfig,[In, Buffer] IDirect3DSurface9** ppDecoderRenderTargets,[In] unsigned int NumRenderTargets,[Out] IDirectXVideoDecoder** ppDecode)</unmanaged>	
         /// <unmanaged-short>IDirectXVideoDecoderService::CreateVideoDecoder</unmanaged-short>	
-        public void CreateVideoDecoder(System.Guid guid, ref SharpDX.MediaFoundation.DirectX.VideoDesc videoDescRef, ref SharpDX.MediaFoundation.DirectX.ConfigPictureDecode configRef, SharpDX.Direct3D9.Surface[] decoderRenderTargetsOut, int numRenderTargets, out SharpDX.MediaFoundation.DirectX.VideoDecoder decodeOut) {
+        public bool CreateVideoDecoder(System.Guid guid, ref SharpDX.MediaFoundation.DirectX.VideoDesc videoDescRef, ref SharpDX.MediaFoundation.DirectX.ConfigPictureDecode configRef, SharpDX.Direct3D9.Surface[] decoderRenderTargetsOut, int numRenderTargets, out SharpDX.MediaFoundation.DirectX.VideoDecoder decodeOut) {
             unsafe {
                 IntPtr* decoderRenderTargetsOut_ = (IntPtr*)0;
                 if ( decoderRenderTargetsOut != null ) {
@@ -984,8 +1018,8 @@ namespace SharpDX.MediaFoundation.DirectX {
                     fixed (void* configRef_ = &configRef)
                         __result__= 
         				SharpDX.MediaFoundation.LocalInterop.Calliint(_nativePointer, &guid, videoDescRef_, configRef_, decoderRenderTargetsOut_, numRenderTargets, &decodeOut_,((void**)(*(void**)_nativePointer))[7]);		
-                decodeOut= (decodeOut_ == IntPtr.Zero)?null:new SharpDX.MediaFoundation.DirectX.VideoDecoder(decodeOut_);	
-                __result__.CheckError();
+                decodeOut= (decodeOut_ == IntPtr.Zero)?null:new SharpDX.MediaFoundation.DirectX.VideoDecoder(decodeOut_);
+                return __result__.Success;
             }
         }
         

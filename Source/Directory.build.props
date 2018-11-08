@@ -19,7 +19,7 @@
     <Version Condition=" '$(SharpDXPackagingDev)' == 'true' ">$(Version)-ci$(SharpDXBuildNumber)</Version>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/../bin</PackageOutputPath>
     <AppType Condition="$(TargetFramework.StartsWith('net4'))">DESKTOP_APP</AppType>
-    <AppType Condition="$(TargetFramework.StartsWith('netstandard'))">REFERENCE</AppType>
+    <AppType Condition="$(TargetFramework.StartsWith('netstandard'))">DESKTOP_APP</AppType>
     <AppType Condition="$(TargetFramework.StartsWith('uap10'))">STORE_APP</AppType>
     <SharpGenMacros>$(SharpGenMacros);$(AppType);DIRECTX11_1</SharpGenMacros>
     <DefineConstants>$(DefineConstants);$(AppType)</DefineConstants>
@@ -29,25 +29,25 @@
     <SharpGenIncludeAssemblyNameFolder>true</SharpGenIncludeAssemblyNameFolder>
     <SharpGenOutputDirectory>$(MSBuildProjectDirectory)/../</SharpGenOutputDirectory>
     <SharpGenGeneratedCodeFolder>Generated/$(AppType)</SharpGenGeneratedCodeFolder>
-    <SharpGenGeneratedCodeFolder Condition="'$(TargetFramework)' == 'net40'">Generated/net40_$(AppType)</SharpGenGeneratedCodeFolder>
+    <!--<SharpGenGeneratedCodeFolder Condition="'$(TargetFramework)' == 'net40'">Generated/net40_$(AppType)</SharpGenGeneratedCodeFolder>-->
     <SharpGenDocumentationOutputDir>$(MSBuildThisFileDirectory)/DocumentationCache/$(TargetFramework)/</SharpGenDocumentationOutputDir>
     <SharpGenGenerateConsumerBindMapping>false</SharpGenGenerateConsumerBindMapping>
 
     <!--Output all assemblies into the same folder for the samples and to avoid copying assembly references all around for each project-->
     <UseCommonOutputDirectory>true</UseCommonOutputDirectory>
     <OutputPath>$(MSBuildThisFileDirectory)..\Bin\$(Configuration)\</OutputPath>
-    <DocumentationFile Condition="'$(Configuration)' == 'Release'">$(MSBuildThisFileDirectory)..\Bin\$(Configuration)\$(TargetFramework)\$(PackageId).xml</DocumentationFile>
+    <DocumentationFile>$(MSBuildThisFileDirectory)..\Bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
 
     <!-- Enable sourcelink support -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!--<PublishRepositoryUrl>true</PublishRepositoryUrl>-->
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' And Exists('$(MSBuildThisFileDirectory)/../sharpdx.snk')">
+  <!--<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' And Exists('$(MSBuildThisFileDirectory)/../sharpdx.snk')">
     <DefineConstants>$(DefineConstants);SHARPDX_SIGNED</DefineConstants>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/../sharpdx.snk</AssemblyOriginatorKeyFile>
     <DelaySign>true</DelaySign>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <ItemGroup>
     <PackageReference Include="SharpGenTools.Sdk" Version="1.1.1" PrivateAssets="All" />
