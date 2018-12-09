@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Source\SharpDX.DXGI\SharpDX.DXGI.csproj" />
     <ProjectReference Include="..\Source\SharpDX.MediaFoundation\SharpDX.MediaFoundation.csproj" />
   </ItemGroup>
 

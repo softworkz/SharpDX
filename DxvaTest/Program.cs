@@ -12,10 +12,15 @@ namespace DxvaTest
 
             var logManager = new SimpleLogManager();
 
-            using (var detector = new MainDetector(logManager.GetLogger("Dxva")))
+            using (var gip = new GraphicsInfrastructureProvider(logManager.GetLogger("DXGI")))
             {
-                detector.DoCodecs();
+                gip.Detect();
             }
+
+            ////using (var detector = new MainDetector(logManager.GetLogger("Dxva")))
+            ////{
+            ////    detector.DoCodecs();
+            ////}
         }
     }
 }
